@@ -1,0 +1,28 @@
+name: Mod bauen
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Projekt holen
+        uses: actions/checkout@v6
+      - name: Projekt entpacken
+        run: unzip -o projekt.zip -d mod
+      - name: Java 25 einrichten
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+      - name: Mod bauen
+        working-directory: mod
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build
+      - name: Mod-Datei bereitstellen
+        uses: actions/upload-artifact@v7
+        with:
+          name: eventtechnik-mod
+          path: |
+            mod/build/libs/*.jar
+            !mod/build/libs/*-sources.jar
